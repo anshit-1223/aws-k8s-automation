@@ -58,13 +58,14 @@ This project focuses on automating the process of:
 
 🔄 Workflow
 
+```text
 Terraform
     ↓
 ☁️ AWS Infrastructure
     ↓
 🖥️ EC2 Instances
     ↓
-Ansible Configuration
+⚙️ Ansible Configuration
     ↓
 ☸️ Kubernetes Setup
     ↓
@@ -73,6 +74,8 @@ Ansible Configuration
 🔗 Worker Node Join
     ↓
 🚀 Kubernetes Cluster
+```
+
 
 
 ##NEED TO CHANGE BEFORE RUNNING TERRAFORM AND ANSIBLE
