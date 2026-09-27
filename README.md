@@ -31,20 +31,29 @@ This project focuses on automating the process of:
 
 ## 🏗️ Architecture
 
-                  ☁️ AWS Cloud
-                       │
-                🏗️ Terraform
-                       │
-          ┌────────────┴────────────┐
-          │                         │
-     🖥️ Control Plane          🖥️ Worker Nodes
-          │                         │
-          │                     ⚙️ Ansible
-          │                         │
-          └────────── ☸️ ───────────┘
-                   kubeadm
-                       │
-                Kubernetes Cluster
+                         ☁️ AWS Cloud
+                              │
+                       🏗️ Terraform
+                              │
+                    ┌─────────┴─────────┐
+                    │                   │
+             🖥️ Control Plane     🖥️ Worker Nodes
+                    │                   │
+                    └─────────┬─────────┘
+                              │
+                         ⚙️ Ansible
+                              │
+                  Kubernetes Node Setup
+                              │
+                         🔧 kubeadm
+                              │
+                    ☸️ Kubernetes Cluster
+                              │
+                     ┌────────┴────────┐
+                     │                 │
+               Control Plane       Worker Nodes
+                     │                 │
+                     └────── 🔗 ───────┘
 
 
 🔄 Workflow
