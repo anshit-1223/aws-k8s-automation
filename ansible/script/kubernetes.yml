@@ -1,0 +1,83 @@
+#Author - Anshit Verma
+#Date - 27-Sep-2026
+#Description - Install Kubernetes(kubelet,kubeadm,kubelet,containerd)
+---
+- name: Install Kubernetes(kubelet,kubeadm,kubelet,containerd).
+  hosts: kube
+  become: yes
+#  vars:
+
+  tasks:
+    - name: update packages
+      apt:
+        update_cache: yes
+
+    - name: Upgrade Packages
+      apt:
+        upgrade: yes
+
+    - name: Swap off
+      shell: sudo swapoff -a
+
+    - name: Install Prerequisites(curl)
+      apt:
+         name: curl
+         state: present
+
+    - name: Install  Prerequisites(ca-certificates)
+      apt:
+        name: ca-certificates
+        state: present
+
+    - name:  Create Keyrings directory
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Download Docker GPG Keys for containerd
+      get_url:
+          url: https://download.docker.com/linux/debian/gpg
+          dest: /etc/apt/keyrings/docker.asc
+          mode: '0644'
+
+    - name: Add docker.asc repo
+      script: dockerinstall.sh
+
+    - name: Download and add kubernetes gpg keys
+      get_url:
+          url: https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key
+          dest: /tmp/kubernetes-release.key
+          mode: '0644'
+
+    - name: Convert key to keyring
+      command:
+          cmd: gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg /tmp/kubernetes-release.key
+          creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+      become: true
+
+    - name: Add kubernetes.list
+      script: kubernetes.sh
+
+    - name: Installing kubelet, kubeadm, kubelet, containerd.
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: true
+      with_items:
+          - containerd.io
+          - gpg
+          - apt-transport-https
+          - kubelet
+          - kubeadm
+          - kubectl
+
+    - name:  Add config default
+      shell: containerd config default | sed -e 's/SystemdCgroup = false/SystemdCgroup = true/' -e 's/sandbox_image = "registry.k8s.io\/pause:3.6"/sandbox_image = "registry.k8s.io\/pause:3.9"/' | sudo tee /etc/containerd/config.toml
+
+    - name: Start and enable the containerd service
+      systemd:
+        name: containerd
+        state: restarted
+        enabled: true
+...

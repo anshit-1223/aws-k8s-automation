@@ -1,0 +1,67 @@
+#Author - Anshit Verma
+#Date - 26-Sep-2026
+#Description - Install Docker and Docker-Compose
+---
+- name: Install Docker and Docker-Compose.
+  hosts: anshit
+  become: yes
+  vars:
+
+  tasks:
+    - name: update packages
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: Install Prerequisites(curl)
+      apt:
+         name: curl
+         state: present
+
+    - name: Install  Prerequisites(ca-certificates)
+      apt:
+        name: ca-certificates
+        state: present
+
+    - name:  Create Keyrings directory
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Download Docker GPG Keys
+      get_url:
+          url: https://download.docker.com/linux/debian/gpg
+          dest: /etc/apt/keyrings/docker.asc
+          mode: '0644'
+
+    - name: Add docker.asc repo
+      script: dockerinstall.sh
+
+    - name: Install Docker and Required Packages
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: true
+      with_items:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+          - docker-buildx-plugin
+
+    - name: Get the username
+      shell: who | awk 'NR==1{print $1}'
+      register: username
+    - name: Add user in the docker group
+      user:
+        name: "{{ username.stdout }}"
+        groups: docker
+        append: true
+
+    - name: Start and enable docker service.
+      systemd:
+        name: docker
+        state: started
+        enabled: true 
+...
