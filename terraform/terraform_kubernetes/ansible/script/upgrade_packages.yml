@@ -1,0 +1,9 @@
+---
+- name: update
+  hosts: k8s_cluster
+  become: yes
+  tasks:
+    - name: Update cache
+      apt:
+        update_cache: yes
+...
