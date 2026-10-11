@@ -39,7 +39,6 @@ print("[k8s_cluster:vars]")
 print(f"ansible_user={user}")
 print(f"ansible_ssh_private_key_file={key}")
 print("ansible_python_interpreter=/usr/bin/python3")
-ansible_host_key_checking=False
 PY
 
 echo "Generated inventory:"
